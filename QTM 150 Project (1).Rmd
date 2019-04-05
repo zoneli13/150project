@@ -1,0 +1,129 @@
+---
+title: "QTM 150 Project"
+author: "Zone Li"
+output:
+  html_document:
+    self_contained: true
+    fig caption: yes 
+    theme: spacelab
+---
+# **What is required of you to get into medical school?**
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center")
+library(ggplot2)
+```
+
+### Introduction and background:
+The question of what we need to do or accomplish to get into a decent medical school arose during a discussion I had with my friends over Thanksgiving break. Similar to me, a couple of my close friends are seriously considering the medical field. We talked about the requirements of getting to a medical school and the amount of effort one had to put in. Another question that arose was what was the most important factor involved in getting to med school. All of this was idle conversation, after all, this discussion was about something far in the future. However, during the conversation, I realized that none of us really knew what we were talking about. None of us had the expertise nor the experience to really speak on the subject. Everything that we said was based on stuff we heard from doctors that have not been to med school in many years or just stuff that we read online that we perceived to be true. None of us have actually talked to someone that has been accepted into med school within the past couple of years.
+
+I decided to use this project as a way to find out more about the process and what role each factor played in the application and admission process. I also wanted to see how the people around me (i.e. close to my age) do and whether or not my perceptions toward the process of applying to medical school are correct.
+
+### Data Collection
+To collect data, a [Google forms survey](https://goo.gl/forms/wxz07C2UaA6G6cvt1 "QTM 150 Survey: Medical School") was created. Questions were written based on the prevalence during the conversations I had over break and my basic understanding of the requirements for medical school. I contacted my RA who had gotten into med school and asked to him to send the survey to his friends that had also gotten into med school. I also got in touch with some of my upperclassmen friends and asked them to send it to anyone that they knew that got accepted by a medical school. 
+
+
+### Data Frame
+```{r}
+survey_data <- read.csv("https://github.com/zoneli13/150project/blob/master/QTM%20150%20Survey:%20Medical%20School.csv?raw=true")
+
+# Renaming vectors
+when_med<-survey_data$When.did.you.decide.you.wanted.to.go.into.a.medical.field.
+gpa <- survey_data$What.was.your.GPA.when.you.applied...enter.a.number.
+most_stressful <- survey_data$What.was.the.most.stressful.part.about.applying.
+most_important <- survey_data$What.factor.is.the.most.important.when.applying.
+mcat_date <- survey_data$When.did.you.take.the.MCAT.
+mcat_score <- survey_data$What.was.your.MCAT.score.
+s_timestamp <- survey_data$Timestamp
+
+# I shortened one of the answers in order to make it more consise and also so that it won't get cut off when in a graph
+levels(most_important)[levels(most_important)=="It's not just one aspect it's the culmination of balancing all of the above while maintaining a social life, job, and other obligations "] <- "A culmination of factors"
+
+# The 76 months entry was likely a typo so it was changed to 7 months. 
+mcat_prep_time <- c(3.5, 3.5,  1.0,  2.0,  1.0,  1.0,  3.0,  4.0, 7.0,  7.0,  3.0,  5.0,  9.0,  3.0,  3.0,  5.0,  3.0,  3.0,  6.0,  2.0,  4.0)
+
+# Creating the data frame
+survey.df <- data.frame(s_timestamp, when_med, gpa, most_stressful, most_important, mcat_date, mcat_prep_time, mcat_score)
+
+```
+### Data Visualization and Discussion
+
+The following charts were created by Google. They display some of the qualitative responses in a pie chart form:
+<center>
+
+![Figure 1](https://i.postimg.cc/W1bwD0cT/decision-pie-chart.png)
+
+</center>
+The above graphic shows that the majority of those surveyed decided that they want to pursue a career in medical during or prior to high school. This particular question was included in the survey because simply because I decided I wanted to go into medicine during my sophomore year of high school and I wanted to see if others had a similar experience. 
+
+<center>
+
+![Figure 2](https://i.postimg.cc/9Q7PHYNF/important.png) 
+
+![Figure 3](https://i.postimg.cc/rm85WXyK/stress.png)
+
+</center>
+According Figure 2, the most important factor involved in the application process is the MCAT with interviews second. Meanwhile, Figure 3 shows that there are 2 prominent stressors: GPA and MCAT. Both of these stressor are expected since MCAT is what most respondents view as the most important. GPA on the other hand was not considered the most important, and yet it is the another prominent stressor. This could be due to GPA being a culmulative factor, something that is constantly on a student's mind. It could also be due to the school or environment a student is in. A student that is in a more competitive environment would naturally be more stress about their grades.
+
+```{r echo = FALSE}
+# In order to put the three histograms side by side for comparison, the gridExtra package was used.
+library(gridExtra)
+ 
+plot1 <- ggplot(survey.df, aes(x=gpa)) + 
+  geom_histogram(binwidth=0.1, color="darkblue", fill="lightblue")+
+  geom_vline(xintercept = mean(gpa), color="red", linetype="dashed", size=1)+
+  geom_vline(xintercept = 3.57, color="blue", linetype="dashed", size=1)+
+  labs(x="GPA", title="GPA of Respondents")+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) 
+
+plot2 <- ggplot(survey.df, aes(x=mcat_prep_time))+
+  geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue")+
+  labs(x="Time Spent Preparing (Months)", title="MCAT Preparation Time Among Respondents")+
+   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+
+plot3 <-ggplot(survey.df, aes(x=mcat_score))+
+  geom_histogram(binwidth=1, color="darkblue", fill="lightblue")+
+  geom_vline(xintercept = mean(mcat_score, na.rm = T), color="red", linetype="dashed", size=1)+
+  geom_vline(xintercept = 505.6, color="blue", linetype="dashed", size=1)+
+  labs(x="MCAT Score", title="MCAT Score of Respondents", caption="Figure 4")+
+  theme(plot.caption = element_text(hjust = 0.5))+
+ scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+grid.arrange(plot1, plot2, plot3, nrow=3)
+```
+
+In order to make Figure 4, I used the [gridExtra](https://stackoverflow.com/questions/1249548/side-by-side-plots-with-ggplot2) package. Figure 4 shows the distribution of the GPA, MCAT score, and time spent studying for the MCAT. The red dashed lines display where the average is GPA and MCAT score were for the respondents. The blue dashed line are the [2018-19 averages](https://www.aamc.org/download/321494/data/factstablea16.pdf) as reported by the Association of American Medical Colleges. It is important keep that in mind since the responses could potentially be different for those that are closer to the average. There is a lot of factors that could impact these responses. For example, GPA could be affected by what the respondents chose to study during their undergraduate career. However, all of the respondents had to have completed the necessary prerequisites for medical school. The MCAT preparation time is something I was curious in as well. I had always though that 6 months prior to taking the MCAT would be a good time to start studying. However, the results show that the majority of respondents started less than 5 months prior.
+
+```{r echo = FALSE, warning = FALSE}
+ggplot(survey.df, aes(x=mcat_prep_time, y=mcat_score))+
+  geom_point(aes(color=most_important, size=gpa))+
+  theme(legend.position = "right")+
+  scale_size(name="GPA")+
+  scale_color_discrete(name="Most Important Factor")+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
+  scale_y_continuous(breaks=scales::pretty_breaks(n=10))+
+  labs(x="Time Spent Preparing for MCAT (Months)", 
+       y="MCAT Score",caption="Figure 5")+
+  theme(plot.caption = element_text(hjust = 1))
+```
+
+Figure 5 shows the several factors. I thought it would be interesting to see how everything correlates with one another. Here, one can see that most of the respondents with the highest reported GPA's also said that the most important factor is the MCAT. Perhaps the reason for the answer was the because their GPA was so high. It also interesting to see that most of the respondents that said that the MCAT was the most important factor did not study for more than 5 months in advance for MCAT. Figure 5 also shows little to no correlation between the amount of time spent studying for their MCATs and the actual MCAT score. This is unexpected since one would normal assume that more studying correlates with a better grade. 
+
+One thing that surprised me was the fact that none of the respondents answered "Prerequisites" as the most important factor. However, a deeper analysis shows that perhaps the prerequisites fall under the umbrella of GPA since, as mentioned earlier, all potential medical school applicants will have to complete them at some point.
+
+```{r echo = FALSE}
+ggplot(survey.df, aes(x=gpa, y=mcat_score))+
+  geom_point(aes(col=most_stressful))+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
+  scale_color_discrete(name="Most Stressful Factor")+
+  labs(x="GPA", y="MCAT Score", caption="Figure 6")+
+  theme(plot.caption = element_text(hjust = 1))
+```  
+Figure 6 shows thats the there is does not appear to to be clear correlation between GPA and MCAT Score. Because GPA and MCAT were the two most prominent stressors (see Figure 3), I wanted to compare all three variables and see if there were any clear trends. Those with lower GPA's were most stressed about their GPA's. The three respondents that had the high GPA's were most stressed with finding research opportunities. Most of the respondents with above average GPA's viewed the MCAT as the most stressful, which makes sense considering they don't really have to worry about their GPA. This can also be related to what the respondents viewed as most important to applying (Figure 2). They likely did not view the other factors as the most important and did not stress about it.
+
+### Limitations and Future Considerations
+
+After completing the survey and analyzing the results, I realized that there is a lot more I could have asked about to make more educated conclusions. I could have asked about demographics and each respondents chosen major. I could have also asked about their study habits. If these factors had been included, I would been able to better understand the results, especially those of importance and stress (Figures 1 and 2).
+
+The results do help me understand what I need to focus on in the future. They also give me something to shoot for. Most respondents were better than the average especially in regard to MCAT score. I also need to work hard to do just as well if not better than them.
+
+
