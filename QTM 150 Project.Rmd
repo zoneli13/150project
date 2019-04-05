@@ -1,0 +1,50 @@
+---
+title: "QTM 150 Project"
+author: "Zone Li"
+output:
+  html_document:
+    self_contained: no
+---
+# **What is required of you to get into medical school?**
+
+### Introduction and background:
+The question of what we need to do or accomplish to get into a decent medical school arose during a discussion I had with my friends over Thanksgiving break. Similar to me, a couple of my close friends are seriously considering the medical field. We talked about the requirements of getting to a medical school and the amount of effort one had to put in. Another question that arose was what was the most important factor involved in getting to med school. All of this was idle conversation, after all this was all far in the future. However, during the conversation, I realized that none of us really knew what we were talking about. None of us had the expertise nor the experience to speak on the subject. Everything that we said was based on stuff we heard from doctors that have not been to med school in many years or just stuff that we read online that we perceived to be true. None of us have actually talked to someone that has been accepted into med school within the past couple of years.
+
+I decided to look into the subject and this project was a good outlet to do so.
+
+### Data Collection
+
+
+
+### Data Frame
+```{r}
+survey_data <- read.csv("https://github.com/zoneli13/150project/blob/master/QTM%20150%20Survey:%20Medical%20School.csv?raw=true")
+
+# Renaming vectors
+decision<-survey_data$When.did.you.decide.you.wanted.to.go.into.a.medical.field.
+gpa <- survey_data$What.was.your.GPA.when.you.applied...enter.a.number.
+stress <- survey_data$What.was.the.most.stressful.part.about.applying.
+important <- survey_data$What.factor.is.the.most.important.when.applying.
+mcat_date <- survey_data$When.did.you.take.the.MCAT.
+mcat_score <- survey_data$What.was.your.MCAT.score.
+s_timestamp <- survey_data$Timestamp
+
+# The 76 months entry was likely a typo so it was changed to 7 months. 
+mcat_prep_time <- c(3.5, 3.5,  1.0,  2.0,  1.0,  1.0,  3.0,  4.0, 7.0,  7.0,  3.0,  5.0,  9.0,  3.0,  3.0,  5.0,  3.0,  3.0,  6.0,  2.0,  4.0)
+
+# Creating the data frame
+survey.df <- data.frame(s_timestamp, decision, gpa, stress, important, mcat_date, mcat_prep_time, mcat_score)
+
+summary(mcat_score)
+summary(gpa)
+```
+### Data Visualization
+
+The following charts were created by Google. They display some basic results from the survey.
+
+![](~/Documents/Education /QTM 150/decision pie chart.png)
+```{r}
+
+
+```
+
